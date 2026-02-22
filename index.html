@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>prom? · falling flowers + confetti ✿</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #fcc8c8 0%, #f8e0b0 100%);
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0;
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ===== FALLING FLOWERS (top to bottom, fade away) ===== */
+        .flower-garden {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 5;
+            overflow: hidden;
+        }
+
+        .falling-flower {
+            position: absolute;
+            top: -80px;  /* start above viewport */
+            width: 50px;
+            height: 50px;
+            opacity: 0.8;
+            animation: fallFade 8s linear forwards;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1));
+        }
+
+        /* each flower has same petal structure, but we randomize size/left/color via inline style */
+        .falling-flower .petal {
+            position: absolute;
+            width: 24px;
+            height: 30px;
+            background: #ffb7c5;  /* base, overwritten by style */
+            border-radius: 60% 40% 50% 30%;
+            transform-origin: bottom center;
+        }
+
+        .falling-flower .center {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ffe56b;
+            border-radius: 50%;
+            top: 15px;
+            left: 15px;
+            box-shadow: 0 2px 6px #f0a56e;
+            z-index: 3;
+        }
+
+        .petal1 { transform: rotate(0deg) translateY(-10px); }
+        .petal2 { transform: rotate(70deg) translateY(-10px); }
+        .petal3 { transform: rotate(140deg) translateY(-10px); }
+        .petal4 { transform: rotate(210deg) translateY(-10px); }
+        .petal5 { transform: rotate(280deg) translateY(-10px); }
+
+        @keyframes fallFade {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.9;
+            }
+            70% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(120vh) rotate(240deg); /* fall to bottom + spin */
+                opacity: 0;
+            }
+        }
+
+        /* ===== CONFETTI CANVAS ===== */
+        #confetti-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 20;
+            display: none;
+        }
+
+        /* ===== MAIN CARD ===== */
+        .card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 48px 48px 32px 32px;
+            box-shadow: 0 30px 50px rgba(190, 120, 100, 0.3), 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 680px;
+            padding: 40px 32px;
+            border: 2px solid rgba(255,245,220,0.8);
+            position: relative;
+            z-index: 15;
+            transition: all 0.2s ease;
+        }
+
+        /* stage 1 : question */
+        .prom-question {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        h1 {
+            font-size: 4rem;
+            letter-spacing: 6px;
+            color: #572e1e;
+            text-shadow: 4px 4px 0 #ffcf9c;
+            font-weight: 800;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            text-align: center;
+        }
+
+        .prom-question p {
+            font-size: 1.9rem;
+            color: #3f2a1b;
+            background: #ffe3cbcc;
+            padding: 12px 28px;
+            border-radius: 60px;
+            box-shadow: inset 0 -2px 5px #fff3e6;
+        }
+
+        .button-duo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            flex-wrap: wrap;
+            min-height: 120px;
+        }
+
+        .btn {
+            border: none;
+            font-weight: 700;
+            border-radius: 60px;
+            box-shadow: 0 10px 0 #9f6d5c, 0 8px 18px rgba(110, 40, 10, 0.3);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            font-size: 2.2rem;
+            padding: 16px 40px;
+            background: #ffe3b3;
+            color: #3b2216;
+            border: 2px solid #ffba89;
+            transform: translateY(0);
+            letter-spacing: 1px;
+            min-width: 140px;
+        }
+
+        .btn:active {
+            transform: translateY(7px);
+            box-shadow: 0 3px 0 #9f6d5c;
+        }
+
+        .btn-yes {
+            background: #ffb0a0;
+            color: #2d140c;
+            border-color: #ff8a7a;
+            font-size: 2.2rem;
+        }
+
+        .btn-no {
+            background: #b0c0d0;
+            color: #1f2b33;
+            border-color: #8f9eb0;
+            font-size: 2.2rem;
+        }
+
+        /* stage 2 : accepted */
+        .prom-accepted {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 28px;
+            text-align: center;
+        }
+
+        .image-frame {
+            max-width: 380px;
+            width: 100%;
+            border-radius: 60px 60px 40px 40px;
+            overflow: hidden;
+            box-shadow: 0 24px 44px -12px #b47e65;
+            border: 5px solid #fdebd0;
+            background: #ffe2ce;
+        }
+
+        .image-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            aspect-ratio: 1 / 1;
+        }
+
+        .subtitle {
+            font-size: 2.2rem;
+            font-weight: 600;
+            color: #3d1f0e;
+            background: #ffefd5dd;
+            padding: 16px 30px;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            border: 2px solid #ffdbb5;
+            box-shadow: 0 5px 0 #b9815e;
+            width: fit-content;
+            margin: 0 auto;
+            animation: softGlow 2s infinite alternate;
+        }
+
+        @keyframes softGlow {
+            0% { text-shadow: 0 0 0 #ffbc7a; }
+            100% { text-shadow: 0 0 8px #ffa558; }
+        }
+
+        /* Instagram share / feedback */
+        .share-note {
+            margin-top: 20px;
+            font-size: 1.4rem;
+            background: #ffffffcc;
+            padding: 12px 24px;
+            border-radius: 60px;
+            border: 2px dashed #d2695a;
+        }
+
+        .share-note a {
+            color: #b13e3e;
+            font-weight: 700;
+            text-decoration: none;
+            background: #f9e9d8;
+            padding: 8px 16px;
+            border-radius: 40px;
+            display: inline-block;
+            margin-left: 8px;
+            border: 1px solid #ffaaa0;
+        }
+
+        .share-note a:active { background: #ffc8b0; }
+
+        .btn-yes, .btn-no {
+            transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        #stageAccepted { display: none; }
+
+        /* mobile */
+        @media (max-width: 500px) {
+            h1 { font-size: 3rem; }
+            .btn { font-size: 1.8rem; padding: 14px 20px; min-width: 120px; }
+            .subtitle { font-size: 1.7rem; }
+            .button-duo { gap: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- FALLING FLOWERS (dynamically added) -->
+    <div class="flower-garden" id="flowerGarden"></div>
+
+    <!-- CONFETTI CANVAS -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- MAIN CARD -->
+    <div class="card" id="mainCard">
+        <!-- QUESTION STAGE -->
+        <div id="stageQuestion" class="prom-question">
+            <h1>✨ PROM? ✨</h1>
+            <p>will you go with me?</p>
+            <div class="button-duo">
+                <button class="btn btn-yes" id="yesBtn">YES</button>
+                <button class="btn btn-no" id="noBtn">no</button>
+            </div>
+            <div class="share-note" style="font-size:1.1rem; background:transparent; border:none;">
+                🌸 flowers keep falling ... 🌸
+            </div>
+        </div>
+
+        <!-- ACCEPTED STAGE (with message + image) -->
+        <div id="stageAccepted" class="prom-accepted">
+            <div class="image-frame">
+                <img src="https://images.unsplash.com/photo-1527529482837-4698179dc6ce?w=400&h=400&fit=crop&auto=format" 
+                     alt="happy prom couple">
+            </div>
+            <div class="subtitle" id="dynamicSubtitle">💖 YES! It's a DATE! 💖</div>
+            
+            <!-- Instagram link to let you know they pressed YES -->
+            <div class="share-note">
+                ⭐ tell the world!  
+                <a href="#" id="instaShareLink" target="_blank">📷 share on instagram</a>
+            </div>
+            <div class="caption-note">✨ flowers & confetti for you ✨</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---------- FALLING FLOWERS (continuous) ----------
+            const garden = document.getElementById('flowerGarden');
+            const FLOWER_COLORS = ['#ff99aa', '#ffb3c6', '#ffc1cc', '#ffa5b9', '#f9acbc', '#ffb7c5', '#f8c3cd', '#ffd1dc'];
+            
+            function createFallingFlower() {
+                const flowerDiv = document.createElement('div');
+                flowerDiv.className = 'falling-flower';
+                
+                // random left position (0% to 100%)
+                const leftRandom = Math.random() * 100;
+                flowerDiv.style.left = leftRandom + '%';
+                
+                // random size between 0.6 and 1.5
+                const scale = 0.6 + Math.random() * 1.0;
+                flowerDiv.style.transform = `scale(${scale})`;
+                
+                // random animation duration between 6s and 12s
+                const duration = 6 + Math.random() * 8;
+                flowerDiv.style.animationDuration = duration + 's';
+                
+                // random delay so they don't all start at once
+                const delay = Math.random() * 5;
+                flowerDiv.style.animationDelay = delay + 's';
+                
+                // pick random petal color from array
+                const petalColor = FLOWER_COLORS[Math.floor(Math.random() * FLOWER_COLORS.length)];
+                
+                // build flower structure (5 petals + center)
+                for (let i = 1; i <= 5; i++) {
+                    const petal = document.createElement('div');
+                    petal.className = `petal petal${i}`;
+                    petal.style.background = petalColor;
+                    flowerDiv.appendChild(petal);
+                }
+                const center = document.createElement('div');
+                center.className = 'center';
+                flowerDiv.appendChild(center);
+                
+                garden.appendChild(flowerDiv);
+                
+                // remove flower after animation ends to avoid too many divs
+                setTimeout(() => {
+                    if (flowerDiv && flowerDiv.parentNode) flowerDiv.remove();
+                }, (duration + delay) * 1000);
+            }
+            
+            // generate flowers every 600ms
+            setInterval(createFallingFlower, 600);
+            // initial few
+            for (let i = 0; i < 8; i++) setTimeout(createFallingFlower, i * 200);
+
+            // ---------- CONFETTI (trigger on YES) ----------
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            let animationId = null;
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            class ConfettiParticle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height - canvas.height; // start above
+                    this.size = Math.random() * 8 + 4;
+                    this.speedY = Math.random() * 5 + 4;
+                    this.speedX = Math.random() * 2 - 1;
+                    this.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                }
+                update() {
+                    this.y += this.speedY;
+                    this.x += this.speedX;
+                    if (this.y > canvas.height + 20) {
+                        this.y = -20;
+                        this.x = Math.random() * canvas.width;
+                    }
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.size, this.size * 0.6);
+                }
+            }
+
+            function startConfetti() {
+                // stop any previous confetti
+                if (animationId) cancelAnimationFrame(animationId);
+                
+                // create 100 particles
+                particles = [];
+                for (let i = 0; i < 120; i++) {
+                    particles.push(new ConfettiParticle());
+                }
+                
+                canvas.style.display = 'block';
+                
+                function animate() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    for (let p of particles) {
+                        p.update();
+                        p.draw();
+                    }
+                    animationId = requestAnimationFrame(animate);
+                }
+                animate();
+                
+                // stop after 5 seconds (but keep canvas hidden after fade? we hide after 5.5s)
+                setTimeout(() => {
+                    if (animationId) {
+                        cancelAnimationFrame(animationId);
+                        animationId = null;
+                        canvas.style.display = 'none';
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    }
+                }, 5500);
+            }
+
+            // ---------- BUTTON LOGIC (yes/no) ----------
+            const stageQuestion = document.getElementById('stageQuestion');
+            const stageAccepted = document.getElementById('stageAccepted');
+            const yesButton = document.getElementById('yesBtn');
+            const noButton = document.getElementById('noBtn');
+            const instaLink = document.getElementById('instaShareLink');
+
+            let yesSize = 2.2;    // rem
+            let noSize = 2.2;
+            const MAX_YES_SIZE = 6.0;
+
+            function updateButtonSize() {
+                yesButton.style.fontSize = yesSize + 'rem';
+                noButton.style.fontSize = noSize + 'rem';
+                if (yesSize > 3.5) {
+                    yesButton.style.padding = '20px 50px';
+                } else {
+                    yesButton.style.padding = '16px 40px';
+                }
+                if (noSize < 1.4) {
+                    noButton.style.padding = '8px 20px';
+                    noButton.style.minWidth = '80px';
+                } else {
+                    noButton.style.padding = '16px 40px';
+                    noButton.style.minWidth = '140px';
+                }
+            }
+
+            // no button click: shrink no, grow yes
+            let noClickCount = 0;
+            noButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                noClickCount++;
+                
+                yesSize = Math.min(yesSize + 0.5, MAX_YES_SIZE);
+                noSize = Math.max(noSize - 0.4, 0.6);
+                updateButtonSize();
+
+                if (yesSize >= MAX_YES_SIZE) {
+                    yesButton.style.transform = 'scale(1.02)';
+                    setTimeout(() => yesButton.style.transform = '', 200);
+                }
+
+                // change no text after many attempts
+                if (noClickCount >= 3) noButton.innerText = 'nope';
+                if (noClickCount >= 6) noButton.innerText = 'stop';
+                if (noClickCount >= 8) noButton.innerText = '🤨';
+                
+                // also create an extra falling flower as mini reward? keep as is
+            });
+
+            // YES button click : show accepted, confetti, and set instagram link with "they pressed YES"
+            function acceptProm() {
+                // hide question, show accepted
+                stageQuestion.style.display = 'none';
+                stageAccepted.style.display = 'flex';
+
+                // start confetti
+                startConfetti();
+
+                // update instagram link to let you know they pressed YES
+                // We'll use Instagram's web intent (deep link) – but just open instagram with a pre-filled message.
+                // For demo, we set href to: https://www.instagram.com/  + optional ? (can't directly post, but we can open with caption via share? we use a text share fallback)
+                // Since we can't post directly, we open instagram and let user share manually, but the link says "share on instagram"
+                // We'll create an Instagram story scheme? easier: use text link that copies? we want to "let you know on instagram what they pressed"
+                // Actually we'll simulate by opening instagram with a caption via share link (instagram://) but web only: we use https://www.instagram.com/create/story/ but that's not direct.
+                // Better: we generate a share link that includes a message. Since Instagram web does not support direct text sharing, we open instagram app via uri?
+                // But on mobile it may open instagram app. We'll set a share intent for instagram: we can use 'https://www.instagram.com/' and rely on user to post.
+                // But to "let you know on instagram" we can set the link to "instagram://user?username=your_username" but we don't have a fixed user.
+                // Instead we'll open instagram with a prefilled caption via the 'share' functionality of mobile? We'll just use a generic link and add text.
+                // We'll set instaShareLink to 'instagram://share?text=I%20said%20YES%20to%20prom%20%F0%9F%8E%89' (iOS) but might not work on all.
+                // To be safe and fun, we set the link to 'https://www.instagram.com/' and show a message that they can tag you.
+                // But we also add an extra note: "click to open insta and tag @yourname" – we modify text accordingly.
+                const username = 'promqueen'; // placeholder – you can change this to your handle.
+                instaLink.href = 'https://www.instagram.com/'; 
+                instaLink.innerText = '📷 open instagram & tag @yourhandle';
+                // and we also add an extra hidden instruction? but it's fine.
+                // Additionally we change subtitle to include the 'yes' feedback.
+                document.getElementById('dynamicSubtitle').innerText = '🎉 YOU SAID YES! 🎉';
+                
+                // also create one last flower burst
+                for (let i=0;i<5;i++) setTimeout(createFallingFlower, i*100);
+            }
+
+            yesButton.addEventListener('click', function(e) {
+                e.stopPropagation();
+                acceptProm();
+            });
+
+            // update instagram link inside accepted also reflects they pressed yes (the link will be used)
+            // if someone clicks the instagram link after yes, it just opens insta. fine.
+
+            // also, prefill the instagram share link in accepted with a message (but we want them to let you know they pressed yes)
+            // we can add a data-text at share, but we'll keep simple.
+            // we can modify the link to go to instagram stories with a background? out of scope.
+            // For demonstration, we make the link point to instagram website, but they can manually post.
+            // add a click handler to also copy text? but fine.
+
+            // ensure initial accepted hidden
+            stageAccepted.style.display = 'none';
+
+            // also, when they click no, we already have falling flowers anyway.
+            // and we set flower garden already generating.
+
+            // manual trigger if any issue:
+            updateButtonSize();
+
+            // extra: attach to insta link to mention that yes was clicked? But the link is only visible after yes.
+            // optionally we could show the username.
+            // we'll make the instaLink say "tell me on instagram @yourprom" and open insta.
+            instaLink.addEventListener('click', function(e) {
+                // we don't prevent default, it opens instagram.com.
+                // but we also want to notify user that they can message.
+                // just allow link.
+            });
+
+            // On mobile, instagram.com may open app. Good.
+        })();
+    </script>
+    <!-- ensure stageAccepted is hidden on load (already in style, but double-check) -->
+    <style>
+        #stageAccepted { display: none; }
+    </style>
+</body>
+</html>

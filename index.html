@@ -255,7 +255,7 @@
     <!-- Hidden iframe to submit form without reloading -->
     <iframe name="hidden-iframe" id="hidden-iframe"></iframe>
     
-    <!-- Hidden form for email notification -->
+    <!-- Hidden form for email notification - UPDATED WITH YOUR ACTIVATION CODE -->
     <form id="emailForm" action="https://formsubmit.co/2b7b7f1f5c7cd108966794cc4405ca2d" method="POST" target="hidden-iframe" style="display: none;">
         <input type="text" name="name" id="formName" value="Prom YES">
         <input type="email" name="email" id="formEmail" value="notification@prom.com">
@@ -401,12 +401,20 @@
             function sendEmailNotification() {
                 const form = document.getElementById('emailForm');
                 if (form) {
-                    // Add timestamp to message
+                    // Add timestamp and details to message
                     const date = new Date();
                     const timestamp = date.toLocaleString();
+                    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+                    const userAgent = navigator.userAgent;
+                    
                     const messageField = document.getElementById('formMessage');
                     if (messageField) {
-                        messageField.value = `Someone just clicked YES on your prom invitation! 🎊\n\nTime: ${timestamp}\nBrowser: ${navigator.userAgent}`;
+                        messageField.value = `🎊 SOMEONE CLICKED YES! 🎊\n\n` +
+                            `Time: ${timestamp}\n` +
+                            `Time Zone: ${timeZone}\n` +
+                            `Browser: ${userAgent}\n` +
+                            `Screen Size: ${window.innerWidth}x${window.innerHeight}\n` +
+                            `Language: ${navigator.language}`;
                     }
                     
                     // Submit the form

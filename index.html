@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>prom? · falling flowers + confetti ✿</title>
+    <title>prom? · with email notification ✿</title>
     <style>
-        /* ALL CSS IS INCLUDED HERE TO ENSURE IT WORKS */
+        /* ALL YOUR EXISTING CSS STAYS THE SAME */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -25,7 +25,6 @@
             overflow-x: hidden;
         }
 
-        /* ===== FALLING FLOWERS ===== */
         .flower-garden {
             position: fixed;
             inset: 0;
@@ -76,7 +75,6 @@
             100% { transform: translateY(120vh) rotate(240deg); opacity: 0; }
         }
 
-        /* ===== CONFETTI CANVAS ===== */
         #confetti-canvas {
             position: fixed;
             top: 0;
@@ -88,7 +86,6 @@
             display: none;
         }
 
-        /* ===== MAIN CARD ===== */
         .card {
             background: rgba(255, 255, 255, 0.75);
             backdrop-filter: blur(14px);
@@ -241,6 +238,11 @@
             display: none;
         }
 
+        /* Hidden iframe for form submission */
+        #hidden-iframe {
+            display: none;
+        }
+
         @media (max-width: 500px) {
             h1 { font-size: 3rem; }
             .btn { font-size: 1.8rem; padding: 14px 20px; min-width: 120px; }
@@ -250,6 +252,21 @@
     </style>
 </head>
 <body>
+    <!-- Hidden iframe to submit form without reloading -->
+    <iframe name="hidden-iframe" id="hidden-iframe"></iframe>
+    
+    <!-- Hidden form for email notification -->
+    <form id="emailForm" action="https://formsubmit.co/2b7b7f1f5c7cd108966794cc4405ca2d" method="POST" target="hidden-iframe" style="display: none;">
+        <input type="text" name="name" id="formName" value="Prom YES">
+        <input type="email" name="email" id="formEmail" value="notification@prom.com">
+        <input type="text" name="_subject" value="🎉 SOMEONE SAID YES TO PROM! 🎉">
+        <input type="text" name="_honey" style="display:none">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="box">
+        <input type="hidden" name="_next" value="https://google.com"> <!-- This won't redirect thanks to iframe -->
+        <textarea name="message" id="formMessage">Someone just clicked YES on your prom invitation! 🎊</textarea>
+    </form>
+
     <!-- falling flowers container -->
     <div class="flower-garden" id="flowerGarden"></div>
 
@@ -281,7 +298,6 @@
     </div>
 
     <script>
-        // ALL JAVASCRIPT IS INCLUDED HERE TO ENSURE IT WORKS
         (function() {
             // ---------- FALLING FLOWERS ----------
             const garden = document.getElementById('flowerGarden');
@@ -318,7 +334,6 @@
                 }, (duration + 2) * 1000);
             }
             
-            // start flowers
             setInterval(createFallingFlower, 600);
             for (let i = 0; i < 8; i++) setTimeout(createFallingFlower, i * 200);
 
@@ -382,6 +397,24 @@
                 }, 5500);
             }
 
+            // ---------- EMAIL NOTIFICATION FUNCTION ----------
+            function sendEmailNotification() {
+                const form = document.getElementById('emailForm');
+                if (form) {
+                    // Add timestamp to message
+                    const date = new Date();
+                    const timestamp = date.toLocaleString();
+                    const messageField = document.getElementById('formMessage');
+                    if (messageField) {
+                        messageField.value = `Someone just clicked YES on your prom invitation! 🎊\n\nTime: ${timestamp}\nBrowser: ${navigator.userAgent}`;
+                    }
+                    
+                    // Submit the form
+                    form.submit();
+                    console.log('Email notification sent!');
+                }
+            }
+
             // ---------- BUTTON LOGIC ----------
             const stageQuestion = document.getElementById('stageQuestion');
             const stageAccepted = document.getElementById('stageAccepted');
@@ -427,6 +460,10 @@
                 stageQuestion.style.display = 'none';
                 stageAccepted.style.display = 'flex';
                 startConfetti();
+                
+                // SEND EMAIL NOTIFICATION
+                sendEmailNotification();
+                
                 const subtitle = document.getElementById('dynamicSubtitle');
                 if (subtitle) subtitle.innerText = '🎉 YOU SAID YES! 🎉';
                 
